@@ -40,10 +40,10 @@ int main()
         {
             if(time<at[i]) time=at[i];
 
-            rtm[i]=time-at[i];     // Response Time
+            rtm[i]=time-at[i]; 
             time+=bt[i];
 
-            ct[i]=time;            // Completion Time
+            ct[i]=time;    
             tat[i]=ct[i]-at[i];
             wt[i]=tat[i]-bt[i];
         }
