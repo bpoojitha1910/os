@@ -1,0 +1,87 @@
+Write a C program to simulate multi-level queue scheduling algorithm considering the following scenario. All the processes in the system are divided into two categories –
+system processes and user processes. System processes are to be given higher priority than user processes. Use FCFS scheduling for the processes in each queue
+
+#include <stdio.h>
+#include <string.h>
+
+struct Process {
+    int pid;
+    int burstTime;
+    char type[10];
+};
+
+void fcfs(struct Process p[], int n) {
+    int waitingTime[n], turnaroundTime[n];
+    int totalWT = 0, totalTAT = 0;
+
+    waitingTime[0] = 0;
+
+    for (int i = 1; i < n; i++) {
+        waitingTime[i] = waitingTime[i - 1] + p[i - 1].burstTime;
+    }
+
+    for (int i = 0; i < n; i++) {
+        turnaroundTime[i] = waitingTime[i] + p[i].burstTime;
+        totalWT += waitingTime[i];
+        totalTAT += turnaroundTime[i];
+    }
+
+    printf("\nPID\tType\tBurst\tWaiting\tTurnaround\n");
+
+    for (int i = 0; i < n; i++) {
+        printf("%d\t%s\t%d\t%d\t%d\n",
+               p[i].pid,
+               p[i].type,
+               p[i].burstTime,
+               waitingTime[i],
+               turnaroundTime[i]);
+    }
+
+    printf("\nAverage Waiting Time = %.2f",
+           (float)totalWT / n);
+
+    printf("\nAverage Turnaround Time = %.2f\n",
+           (float)totalTAT / n);
+}
+
+int main() {
+    int n;
+
+    printf("Enter total number of processes: ");
+    scanf("%d", &n);
+
+    struct Process systemQueue[n], userQueue[n];
+    int sysCount = 0, userCount = 0;
+
+    for (int i = 0; i < n; i++) {
+        struct Process temp;
+
+        printf("\nEnter Process ID: ");
+        scanf("%d", &temp.pid);
+
+        printf("Enter Burst Time: ");
+        scanf("%d", &temp.burstTime);
+
+        printf("Enter Process Type (System/User): ");
+        scanf("%s", temp.type);
+
+        if (strcmp(temp.type, "System") == 0 ||
+            strcmp(temp.type, "system") == 0) {
+            systemQueue[sysCount++] = temp;
+        } else {
+            userQueue[userCount++] = temp;
+        }
+    }
+
+    if (sysCount > 0) {
+        printf("\n===== System Processes Queue =====\n");
+        fcfs(systemQueue, sysCount);
+    }
+
+    if (userCount > 0) {
+        printf("\n===== User Processes Queue =====\n");
+        fcfs(userQueue, userCount);
+    }
+
+    return 0;
+}
