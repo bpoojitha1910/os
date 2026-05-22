@@ -1,0 +1,46 @@
+Write a C program to simulate Real-Time CPU Scheduling algorithms:Rate- Monotonic
+
+#include<stdio.h>
+#include<math.h>
+
+int main(){
+int n,t,i,j,p[10],e[10],r[10]={0};
+float u=0,ub;
+
+printf("Enter no. of processes: ");
+scanf("%d",&n);
+
+for(i=0;i<n;i++){
+printf("Enter Period & Execution time of P%d: ",i+1);
+scanf("%d%d",&p[i],&e[i]);
+u+=(float)e[i]/p[i];
+}
+
+ub=n*(pow(2,1.0/n)-1);
+
+printf("\nRate Monotonic Scheduling\n");
+printf("CPU Utilization = %.2f\nBound = %.2f\n",u,ub);
+
+if(u<=ub) printf("Schedulable under RMS\n");
+else printf("Not Guaranteed Schedulable\n");
+
+printf("\nTime\tProcess\n");
+
+for(t=0;t<20;t++){
+for(i=0;i<n;i++)
+if(t%p[i]==0) r[i]=e[i];
+
+for(i=0;i<n && !r[i];i++);
+
+for(j=i+1;j<n;j++)
+if(r[j] && p[j]<p[i]) i=j;
+
+printf("%2d\t",t);
+
+if(i<n){
+printf("P%d\n",i+1);
+r[i]--;
+}
+else printf("Idle\n");
+}
+}
