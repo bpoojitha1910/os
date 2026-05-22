@@ -1,0 +1,63 @@
+Write a C program to simulate Real-Time CPU Scheduling algorithms:Earliest-deadline First
+
+#include <stdio.h>
+
+struct Process
+{
+int pid;
+int Ci; 
+int Ti; 
+};
+
+int main()
+{
+int n, i, j;
+float utilization = 0;
+
+struct Process p[10], temp;
+
+printf("Enter number of processes: ");
+scanf("%d", &n);
+
+for(i = 0; i < n; i++)
+{
+p[i].pid = i + 1;
+
+printf("Enter Ci for Process P%d: ", i + 1);
+scanf("%d", &p[i].Ci);
+
+printf("Enter Deadline Time (Ti) for Process P%d: ", i + 1);
+scanf("%d", &p[i].Ti);
+
+utilization += (float)p[i].Ci / p[i].Ti;
+}
+
+for(i = 0; i < n - 1; i++)
+{
+for(j = i + 1; j < n; j++)
+{
+if(p[i].Ti > p[j].Ti)
+{
+temp = p[i];
+p[i] = p[j];
+p[j] = temp;
+}
+}
+}
+
+printf("\nProcesses after EDF Scheduling:\n");
+printf("\nPriority\tProcess\tCi\tTi(deadline)\n");
+
+for(i = 0; i < n; i++)
+{
+printf("%d\t\tP%d\t%d\t%d\n",
+i + 1,
+p[i].pid,
+p[i].Ci,
+p[i].Ti);
+}
+
+printf("\nCPU Utilization = Sigma(Ci / Ti) = %.2f\n", utilization);
+
+return 0;
+}
