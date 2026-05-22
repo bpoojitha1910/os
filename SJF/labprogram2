@@ -1,0 +1,92 @@
+Write a C program to simulate the following CPU scheduling algorithm to find turnaround time and waiting time.Using sjf for both premtive and non premtive 
+
+#include<stdio.h>
+#include<limits.h>
+
+int main()
+{
+    int n,i,j,ch;
+    int at[10],bt[10],wt[10],tat[10],rt[10],ct[10],rtm[10];
+
+    printf("Enter number of processes: ");
+    scanf("%d",&n);
+
+    printf("Enter Arrival Time and Burst Time:\n");
+    for(i=0;i<n;i++)
+    {
+        printf("P%d: ",i+1);
+        scanf("%d%d",&at[i],&bt[i]);
+        rt[i]=bt[i];
+        rtm[i]=-1;
+    }
+
+    printf("\n1. SJF Non-Preemptive\n2. SJF Preemptive\nEnter choice: ");
+    scanf("%d",&ch);
+
+    if(ch==1)
+    {
+        for(i=0;i<n-1;i++)
+            for(j=i+1;j<n;j++)
+                if(bt[i]>bt[j])
+                {
+                    int t;
+                    t=bt[i]; bt[i]=bt[j]; bt[j]=t;
+                    t=at[i]; at[i]=at[j]; at[j]=t;
+                }
+
+        int time=0;
+
+        for(i=0;i<n;i++)
+        {
+            if(time<at[i]) time=at[i];
+
+            rtm[i]=time-at[i]; 
+            time+=bt[i];
+
+            ct[i]=time;    
+            tat[i]=ct[i]-at[i];
+            wt[i]=tat[i]-bt[i];
+        }
+    }
+
+    else
+    {
+        int time=0,complete=0,min,shortest=0;
+
+        while(complete!=n)
+        {
+            min=INT_MAX;
+
+            for(i=0;i<n;i++)
+                if(at[i]<=time && rt[i]<min && rt[i]>0)
+                {
+                    min=rt[i];
+                    shortest=i;
+                }
+
+            if(rtm[shortest]==-1)
+                rtm[shortest]=time-at[shortest];
+
+            rt[shortest]--;
+            time++;
+
+            if(rt[shortest]==0)
+            {
+                complete++;
+                ct[shortest]=time;
+
+                tat[shortest]=ct[shortest]-at[shortest];
+                wt[shortest]=tat[shortest]-bt[shortest];
+                if(wt[shortest]<0) wt[shortest]=0;
+            }
+        }
+    }
+
+    printf("\nProcess\tAT\tBT\tCT\tWT\tTAT\tRT\n");
+
+    for(i=0;i<n;i++)
+        printf("P%d\t%d\t%d\t%d\t%d\t%d\t%d\n",
+        i+1,at[i],bt[i],ct[i],wt[i],tat[i],rtm[i]);
+
+    return 0;
+}
