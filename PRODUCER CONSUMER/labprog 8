@@ -1,0 +1,91 @@
+Write a C program to simulate: Producer-Consumer problem using semaphores. 
+
+#include <stdio.h>
+#include <stdlib.h>
+
+#define BUFFER_SIZE 5
+
+int buffer[BUFFER_SIZE];
+int in = 0, out = 0;
+
+
+int mutex = 1;
+int full = 0;
+int empty = BUFFER_SIZE;
+
+void wait(int *s) {
+    while (*s <= 0);
+    (*s)--;
+}
+
+void signal(int *s) {
+    (*s)++;
+}
+
+void producer(int item) {
+    wait(&empty);
+    wait(&mutex);
+
+    buffer[in] = item;
+    printf("Producer produced item %d at position %d\n", item, in);
+
+    in = (in + 1) % BUFFER_SIZE;
+
+    signal(&mutex);
+    signal(&full);
+}
+
+void consumer() {
+    wait(&full);
+    wait(&mutex);
+
+    int item = buffer[out];
+    printf("Consumer consumed item %d from position %d\n", item, out);
+
+    out = (out + 1) % BUFFER_SIZE;
+
+    signal(&mutex);
+    signal(&empty);
+}
+
+int main() {
+    int choice, item;
+
+    while (1) {
+        printf("\n--- Producer Consumer Problem ---\n");
+        printf("1. Produce\n");
+        printf("2. Consume\n");
+        printf("3. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+
+        case 1:
+            if (empty == 0) {
+                printf("Buffer is Full!\n");
+            } else {
+                printf("Enter item to produce: ");
+                scanf("%d", &item);
+                producer(item);
+            }
+            break;
+
+        case 2:
+            if (full == 0) {
+                printf("Buffer is Empty!\n");
+            } else {
+                consumer();
+            }
+            break;
+
+        case 3:
+            exit(0);
+
+        default:
+            printf("Invalid choice!\n");
+        }
+    }
+
+    return 0;
+}
